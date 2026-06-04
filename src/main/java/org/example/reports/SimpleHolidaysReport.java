@@ -3,8 +3,10 @@ package org.example.reports;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
+import net.sf.dynamicreports.report.constant.HorizontalCellComponentAlignment;
 import net.sf.dynamicreports.report.constant.HorizontalTextAlignment;
 import net.sf.dynamicreports.report.constant.LineStyle;
+import net.sf.dynamicreports.report.constant.VerticalCellComponentAlignment;
 import net.sf.dynamicreports.report.constant.VerticalTextAlignment;
 import net.sf.dynamicreports.report.exception.DRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -12,9 +14,11 @@ import org.example.data.HolidaysData;
 import org.example.model.Holiday;
 
 import java.awt.Color;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static net.sf.dynamicreports.report.builder.DynamicReports.cmp;
 import static net.sf.dynamicreports.report.builder.DynamicReports.col;
@@ -54,6 +58,13 @@ public class SimpleHolidaysReport {
 
         StyleBuilder titleStyle = stl.style()
                 .setFontName("Segoe UI")
+                .setFontSize(24)
+                .bold()
+                .setHorizontalTextAlignment(HorizontalTextAlignment.LEFT)
+                .setVerticalTextAlignment(VerticalTextAlignment.MIDDLE);
+
+        StyleBuilder summaryStyle = stl.style()
+                .setFontName("Segoe UI")
                 .setFontSize(20)
                 .bold()
                 .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
@@ -72,16 +83,29 @@ public class SimpleHolidaysReport {
 
         List<Holiday> data = HolidaysData.holidays2021();
 
+        // Title: "Holydays" слева + логотип компании справа (как на примере отчёта).
+        InputStream logoStream = Objects.requireNonNull(
+                SimpleHolidaysReport.class.getResourceAsStream("/logo.png"),
+                "logo.png not found on classpath");
+
+        var titleBand = cmp.horizontalList()
+                .add(cmp.text("Holydays").setStyle(titleStyle))
+                .add(cmp.image(logoStream)
+                        .setFixedDimension(120, 50)
+                        .setHorizontalCellComponentAlignment(HorizontalCellComponentAlignment.RIGHT)
+                        .setVerticalCellComponentAlignment(VerticalCellComponentAlignment.MIDDLE))
+                .setFixedHeight(80);
+
         return report()
                 .setColumnTitleStyle(columnHeaderStyle)
                 .setColumnStyle(borderedStyle)
                 .setColumnHeaderStyle(columnHeaderStyle)
                 .highlightDetailEvenRows()
                 .columns(countryCol, nameCol, dateCol)
-                .title(cmp.text("Holydays - 2021").setStyle(titleStyle).setHeight(80))
+                .title(titleBand)
                 .pageHeader(cmp.text("Report Details").setStyle(pageHeaderStyle).setHeight(40))
                 .pageFooter(cmp.pageXofY())
-                .summary(cmp.text("End of Report").setStyle(titleStyle).setHeight(50))
+                .summary(cmp.text("End of Report").setStyle(summaryStyle).setHeight(50))
                 .setDataSource(new JRBeanCollectionDataSource(data));
     }
 
