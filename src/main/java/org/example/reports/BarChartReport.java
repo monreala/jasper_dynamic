@@ -6,7 +6,7 @@ import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
 import net.sf.dynamicreports.report.constant.HorizontalTextAlignment;
 import net.sf.dynamicreports.report.exception.DRException;
-import net.sf.jasperreports.engine.data.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
 import org.example.data.H2Database;
 
 import java.io.OutputStream;
@@ -20,15 +20,7 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.report;
 import static net.sf.dynamicreports.report.builder.DynamicReports.stl;
 import static net.sf.dynamicreports.report.builder.DynamicReports.type;
 
-/**
- * Bar chart report (#3) — number of Holidays per month, series by country.
- * Источник данных: JRResultSetDataSource из H2.
- *
- * Исходный SQL из задания:
- *   SELECT country, name, data FROM specialdate WHERE TO_CHAR(data, 'YYYY') = '2021'
- * Для агрегированного chart используем эквивалентный сгруппированный запрос
- * (Jasper умеет агрегировать и сырые данные, но pre-aggregation короче и нагляднее).
- */
+
 public class BarChartReport {
 
     private static final String CHART_SQL = """

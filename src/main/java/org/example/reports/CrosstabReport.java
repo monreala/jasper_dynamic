@@ -29,14 +29,7 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.ctab;
 import static net.sf.dynamicreports.report.builder.DynamicReports.report;
 import static net.sf.dynamicreports.report.builder.DynamicReports.stl;
 
-/**
- * Crosstab report (#2).
- *   rows    : country (IT, MD)
- *   columns : month  (1..12)
- *   measure : COUNT(*) — число праздников в месяц/страну
- *   totals  : по строкам и по колонкам
- * Источник данных: JRMapCollectionDataSource.
- */
+
 public class CrosstabReport {
 
     private static final Color HEADER_BACK_COLOR = new Color(0x90, 0xA4, 0xAE);
@@ -91,10 +84,10 @@ public class CrosstabReport {
         build().toPdf(out);
     }
 
-    /** Конвертация List<Holiday> → List<Map<String,Object>> для JRMapCollectionDataSource. */
-    private static List<Map<String, Object>> buildMapDataSource() {
+
+    private static List<Map<String, ?>> buildMapDataSource() {
         List<Holiday> holidays = HolidaysData.holidays2021();
-        List<Map<String, Object>> rows = new ArrayList<>(holidays.size());
+        List<Map<String, ?>> rows = new ArrayList<>(holidays.size()); // Изменили Object на ?
         int id = 1;
         for (Holiday h : holidays) {
             LocalDate date = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

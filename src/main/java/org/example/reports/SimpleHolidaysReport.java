@@ -25,31 +25,24 @@ import static net.sf.dynamicreports.report.builder.DynamicReports.col;
 import static net.sf.dynamicreports.report.builder.DynamicReports.report;
 import static net.sf.dynamicreports.report.builder.DynamicReports.stl;
 import static net.sf.dynamicreports.report.builder.DynamicReports.type;
+import net.sf.dynamicreports.report.constant.HorizontalImageAlignment;
+import net.sf.dynamicreports.report.constant.VerticalImageAlignment;
 
-/**
- * Holidays report (#1).
- * Воспроизводит структуру и дизайн HolidaysReport.jrxml программно через DynamicReports.
- * Источник данных: JRBeanCollectionDataSource (List<Holiday>).
- *
- * Band'ы:
- *   title       -> "Holidays - 2021"
- *   pageHeader  -> "Report Details"
- *   columnHeader -> Country | Name | Date  (серый фон #90A4AE)
- *   detail      -> строки
- *   pageFooter  -> номер страницы
- *   summary     -> "End of Report"
- */
 public class SimpleHolidaysReport {
 
     private static final Color HEADER_BACK_COLOR = new Color(0x90, 0xA4, 0xAE);
 
     public JasperReportBuilder build() {
-        // Общий стиль с рамкой (как <box> с pen 1pt в .jrxml)
+
         StyleBuilder borderedStyle = stl.style()
                 .setBorder(stl.pen1Point().setLineColor(Color.BLACK).setLineStyle(LineStyle.SOLID))
                 .setPadding(stl.padding().setLeft(5).setRight(5))
                 .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
                 .setVerticalTextAlignment(VerticalTextAlignment.MIDDLE);
+
+        StyleBuilder imageStyle = stl.style()
+                .setHorizontalImageAlignment(HorizontalImageAlignment.RIGHT)
+                .setVerticalImageAlignment(VerticalImageAlignment.MIDDLE);
 
         StyleBuilder columnHeaderStyle = stl.style(borderedStyle)
                 .bold()
@@ -75,7 +68,7 @@ public class SimpleHolidaysReport {
                 .setHorizontalTextAlignment(HorizontalTextAlignment.CENTER)
                 .setVerticalTextAlignment(VerticalTextAlignment.MIDDLE);
 
-        // Колонки
+
         TextColumnBuilder<String> countryCol = col.column("Country", "country", type.stringType());
         TextColumnBuilder<String> nameCol    = col.column("Name",    "name",    type.stringType());
         TextColumnBuilder<Date>   dateCol    = col.column("Date",    "date",    type.dateType())
@@ -83,7 +76,7 @@ public class SimpleHolidaysReport {
 
         List<Holiday> data = HolidaysData.holidays2021();
 
-        // Title: "Holydays" слева + логотип компании справа (как на примере отчёта).
+
         InputStream logoStream = Objects.requireNonNull(
                 SimpleHolidaysReport.class.getResourceAsStream("/logo.png"),
                 "logo.png not found on classpath");
@@ -92,8 +85,7 @@ public class SimpleHolidaysReport {
                 .add(cmp.text("Holydays").setStyle(titleStyle))
                 .add(cmp.image(logoStream)
                         .setFixedDimension(120, 50)
-                        .setHorizontalCellComponentAlignment(HorizontalCellComponentAlignment.RIGHT)
-                        .setVerticalCellComponentAlignment(VerticalCellComponentAlignment.MIDDLE))
+                        .setStyle(imageStyle))
                 .setFixedHeight(80);
 
         return report()
